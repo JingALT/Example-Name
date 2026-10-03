@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARBON OFFSET CALCULATOR - CyberDash</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 0, 0.03),
+                rgba(0, 255, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 
+                    -2px 0 #ff00ff,
+                    2px 0 #00ffff,
+                    0 0 10px rgba(0, 255, 0, 0.5);
+            }
+            50% {
+                text-shadow: 
+                    2px 0 #ff00ff,
+                    -2px 0 #00ffff,
+                    0 0 10px rgba(0, 255, 0, 0.7);
+            }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            color: #00dd00;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .border-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .panel {
+            border: 2px solid #00ff00;
+            background: rgba(0, 30, 0, 0.7);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.3),
+                inset 0 0 20px rgba(0, 255, 0, 0.1);
+            position: relative;
+        }
+
+        .panel::before {
+            content: '> ';
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            color: #00ff00;
+            opacity: 0.5;
+        }
+
+        .panel-title {
+            font-size: 1.2em;
+            color: #00ff00;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00dd00;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 20, 0, 0.9);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            box-shadow: 
+                0 0 10px rgba(0, 255, 0, 0.2),
+                inset 0 0 10px rgba(0, 255, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.5),
+                inset 0 0 20px rgba(0, 255, 0, 0.1);
+            background: rgba(0, 40, 0, 0.9);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.2);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            border-color: #00dd00;
+            color: #00dd00;
+        }
+
+        button.secondary:hover {
+            box-shadow: 0 0 20px rgba(0, 221, 0, 0.6);
+            background: rgba(0, 221, 0, 0.1);
+        }
+
+        .results-panel {
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .results-panel.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 3px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .result-label {
+            color: #00dd00;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .result-value {
+            font-size: 2em;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .result-unit {
+            font-size: 0.5em;
+            color: #00dd00;
+            margin-left: 10px;
+        }
+
+        .comparison {
+            background: rgba(0, 255, 0, 0.08);
+            padding: 15px;
+            border-radius: 2px;
+            margin-top: 15px;
+            border: 1px dashed #00ff00;
+        }
+
+        .comparison-text {
+            color: #00dd00;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .warning {
+            background: rgba(255, 200, 0, 0.1);
+            border-left: 3px solid #ffcc00;
+            padding: 15px;
+            margin-top: 20px;
+            color: #ffdd00;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .error {
+            background: rgba(255, 50, 50, 0.1);
+            border-left: 3px solid #ff3333;
+            padding: 15px;
+            margin-top: 20px;
+            color: #ff6666;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .info-box {
+            background: rgba(0, 100, 255, 0.1);
+            border: 1px solid #0099ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #00ddff;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .product-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-button {
+            padding: 15px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 30, 0, 0.7);
+            color: #00ff00;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .type-button.active {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+
+        .type-button:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .advanced-options {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #00dd00;
+        }
+
+        .advanced-toggle {
+            color: #00dd00;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .advanced-toggle::before {
+            content: '► ';
+            transition: transform 0.3s ease;
+        }
+
+        .advanced-toggle.open::before {
+            transform: rotate(90deg);
+            content: '▼ ';
+        }
+
+        .advanced-content {
+            display: none;
+            margin-top: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .advanced-content.show {
+            display: block;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00dd00;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #00dd00;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: #00ff00;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #00dd00;
+            color: #00dd00;
+            font-size: 0.8em;
+        }
+
+        .glitch-text {
+            position: relative;
+        }
+
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #00ff00;
+            opacity: 0;
+            animation: glitch-flicker 0.3s infinite;
+        }
+
+        @keyframes glitch-flicker {
+            0% { opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <div class="container">
+        <header>
+            <h1>⚡ CARBON OFFSET CALCULATOR ⚡</h1>
+            <div class="subtitle">// GAMING HOURS REDEMPTION PROTOCOL v2.0</div>
+            <div class="border-line"></div>
+        </header>
+
+        <div class="panel">
+            <div class="panel-title">📊 Input Module</div>
+            
+            <div class="info-box">
+                💻 Paste a product link and we'll estimate its carbon footprint. The system will calculate how many gaming hours you'd need to offset it through renewable energy engagement activities.
+            </div>
+
+            <div class="product-type-selector">
+                <button class="type-button active" data-type="shoes">👟 SHOES</button>
+                <button class="type-button" data-type="pc">🖥️ PC PARTS</button>
+            </div>
+
+            <div class="input-group">
+                <label for="productLink">🔗 PRODUCT LINK</label>
+                <input type="text" id="productLink" placeholder="https://example.com/product..." />
+            </div>
+
+            <div class="input-group">
+                <label for="productName">📦 PRODUCT NAME (Optional)</label>
+                <input type="text" id="productName" placeholder="Nike Air Max / RTX 4090..." />
+            </div>
+
+            <div class="advanced-options">
+                <div class="advanced-toggle" id="advancedToggle">ADVANCED PARAMETERS</div>
+                <div class="advanced-content" id="advancedContent">
+                    <div class="input-group">
+                        <label for="carbonFootprint">🌍 MANUAL CARBON FOOTPRINT (kg CO₂)</label>
+                        <input type="number" id="carbonFootprint" placeholder="Auto-estimated if blank" min="0" step="0.1" />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gamingWattage">⚡ GAMING PC WATTAGE (Watts)</label>
+                        <input type="number" id="gamingWattage" value="300" min="100" step="10" />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gridCarbon">🔌 GRID CARBON INTENSITY (g CO₂/kWh)</label>
+                        <input type="number" id="gridCarbon" value="400" min="0" step="10" />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="renewablePercent">♻️ RENEWABLE ENERGY % (0-100)</label>
+                        <input type="number" id="renewablePercent" value="30" min="0" max="100" step="5" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="calculateBtn">⚡ CALCULATE OFFSET</button>
+                <button class="secondary" id="resetBtn">🔄 RESET</button>
+            </div>
+
+            <div class="error" id="errorMessage"></div>
+        </div>
+
+        <div class="panel results-panel" id="resultsPanel">
+            <div class="panel-title">📈 OFFSET ANALYSIS COMPLETE</div>
+
+            <div class="result-item">
+                <div class="result-label">▸ DETECTED CARBON FOOTPRINT</div>
+                <div class="result-value">
+                    <span id="detectedCarbon">0</span><span class="result-unit">kg CO₂</span>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">▸ GAMING HOURS REQUIRED (TO OFFSET)</div>
+                <div class="result-value">
+                    <span id="gamingHours">0</span><span class="result-unit">hrs</span>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">▸ ENERGY CONSUMPTION</div>
+                <div class="result-value">
+                    <span id="energyConsumption">0</span><span class="result-unit">kWh</span>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">▸ NET CARBON OFFSET (AT 30% RENEWABLE)</div>
+                <div class="result-value">
+                    <span id="netOffset">0</span><span class="result-unit">kg CO₂</span>
+                </div>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-text">
+                    <strong>⚖️ EQUIVALENCY MATRIX:</strong><br><br>
+                    <span id="equivalencyText"></span>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Days of Gaming</div>
+                    <div class="stat-value" id="gamingDays">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Cost @ $0.12/kWh</div>
+                    <div class="stat-value" id="energyCost">$0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Trees to Offset</div>
+                    <div class="stat-value" id="treeEquivalent">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Car Miles Equivalent</div>
+                    <div class="stat-value" id="carMiles">0</div>
+                </div>
+            </div>
+
+            <div class="warning">
+                <div class="warning-title">⚠️ DISCLAIMER</div>
+                <div>
+                    This calculator provides rough estimates based on industry averages and estimated grid carbon intensity. Actual carbon footprints vary significantly by manufacturer, region, and production methods. For precise data, consult product environmental declarations (EPDs).
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>// CARBON OFFSET CALCULATOR v2.0 | CYBERDASH PROTOCOL</div>
+            <div>Data sourced from EPA, World Bank, and industry estimates</div>
+        </div>
+    </div>
+
+    <script>
+        // Carbon footprint estimates by product type (kg CO₂)
+        const carbonEstimates = {
+            shoes: {
+                low: 5,
+                mid: 8,
+                high: 15
+            },
+            pc: {
+                low: 20,
+                mid: 50,
+                high: 120
+            }
+        };
+
+        let currentProductType = 'shoes';
+
+        // DOM Elements
+        const typeButtons = document.querySelectorAll('.type-button');
+        const productLinkInput = document.getElementById('productLink');
+        const productNameInput = document.getElementById('productName');
+        const carbonFootprintInput = document.getElementById('carbonFootprint');
+        const gamingWattageInput = document.getElementById('gamingWattage');
+        const gridCarbonInput = document.getElementById('gridCarbon');
+        const renewablePercentInput = document.getElementById('renewablePercent');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultsPanel = document.getElementById('resultsPanel');
+        const errorMessage = document.getElementById('errorMessage');
+        const advancedToggle = document.getElementById('advancedToggle');
+        const advancedContent = document.getElementById('advancedContent');
+
+        // Event Listeners
+        typeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                typeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentProductType = btn.dataset.type;
+                carbonFootprintInput.value = '';
+            });
+        });
+
+        advancedToggle.addEventListener('click', () => {
+            advancedToggle.classList.toggle('open');
+            advancedContent.classList.toggle('show');
+        });
+
+        calculateBtn.addEventListener('click', calculate);
+        resetBtn.addEventListener('click', reset);
+
+        function estimateCarbonFootprint(productType, productLink, productName) {
+            let estimate = carbonEstimates[productType].mid;
+
+            // Try to refine estimate based on URL content
+            const urlLower = productLink.toLowerCase();
+            const nameLower = (productName || '').toLowerCase();
+            const combinedText = urlLower + ' ' + nameLower;
+
+            if (productType === 'shoes') {
+                // Premium shoes tend to have higher footprint
+                if (combinedText.includes('premium') || combinedText.includes('luxury') || 
+                    combinedText.includes('limited') || combinedText.includes('jordan') ||
+                    combinedText.includes('yeezy')) {
+                    estimate = carbonEstimates.shoes.high;
+                } else if (combinedText.includes('eco') || combinedText.includes('sustainable') ||
+                           combinedText.includes('recycled') || combinedText.includes('minimal')) {
+                    estimate = carbonEstimates.shoes.low;
+                }
+            } else if (productType === 'pc') {
+                // GPU models rough estimate
+                if (combinedText.includes('4090') || combinedText.includes('3090') ||
+                    combinedText.includes('high-end') || combinedText.includes('flagship')) {
+                    estimate = carbonEstimates.pc.high;
+                } else if (combinedText.includes('4070') || combinedText.includes('3070') ||
+                           combinedText.includes('mid-range')) {
+                    estimate = carbonEstimates.pc.mid;
+                } else if (combinedText.includes('4050') || combinedText.includes('3060') ||
+                           combinedText.includes('budget') || combinedText.includes('entry')) {
+                    estimate = carbonEstimates.pc.low;
+                }
+            }
+
+            return estimate;
+        }
+
+        function calculate() {
+            errorMessage.classList.remove('show');
+            resultsPanel.classList.remove('show');
+
+            const productLink = productLinkInput.value.trim();
+            const productName = productNameInput.value.trim();
+
+            if (!productLink) {
+                showError('Please enter a product link');
+                return;
+            }
+
+            try {
+                new URL(productLink);
+            } catch (e) {
+                showError('Please enter a valid URL');
+                return;
+            }
+
+            let carbonFootprint = parseFloat(carbonFootprintInput.value);
+            if (isNaN(carbonFootprint) || carbonFootprint <= 0) {
+                carbonFootprint = estimateCarbonFootprint(currentProductType, productLink, productName);
+            }
+
+            const gamingWattage = parseFloat(gamingWattageInput.value) || 300;
+            const gridCarbon = parseFloat(gridCarbonInput.value) || 400;
+            const renewablePercent = parseFloat(renewablePercentInput.value) || 30;
+
+            if (carbonFootprint <= 0) {
+                showError('Carbon footprint must be positive');
+                return;
+            }
+
+            // Calculate gaming hours needed
+            // Formula: (Carbon in kg) / (Wattage in W * Grid intensity in g/kWh * (1 - renewable%) / 1000000)
+            // Simplified: Hours = Carbon kg / (Wattage W * Grid g/kWh * (1 - renewable%) / 1,000,000)
+
+            const effectiveGridCarbon = gridCarbon * (1 - renewablePercent / 100);
+            const carbonPerHour = (gamingWattage * effectiveGridCarbon) / 1000000; // kg CO2 per hour
+            const gamingHoursNeeded = carbonFootprint / carbonPerHour;
+
+            const energyConsumption = (gamingHoursNeeded * gamingWattage) / 1000;
+            const netCarbonOffset = gamingHoursNeeded * carbonPerHour;
+
+            // Additional calculations
+            const gamingDays = (gamingHoursNeeded / 24).toFixed(1);
+            const energyCost = (energyConsumption * 0.12).toFixed(2);
+            const treeEquivalent = (carbonFootprint / 20).toFixed(1); // 1 tree = ~20 kg CO2/year
+            const carMiles = (carbonFootprint / 0.41).toFixed(1); // Average car = ~0.41 kg CO2/mile
+
+            // Generate equivalency text
+            let equivalencyText = `Gaming ${gamingHoursNeeded.toFixed(1)} hours at ${gamingWattage}W with ${gridCarbon}g CO₂/kWh grid intensity `;
+            equivalencyText += `(${renewablePercent}% renewable) would offset ~${carbonFootprint.toFixed(2)} kg CO₂.<br><br>`;
+            equivalencyText += `That's equivalent to:<br>`;
+            equivalencyText += `• ${treeEquivalent} trees absorbing CO₂ for 1 year<br>`;
+            equivalencyText += `• ${carMiles} miles of car driving<br>`;
+            equivalencyText += `• ${(carbonFootprint / 5).toFixed(1)} gallons of gasoline burned`;
+
+            // Display results
+            document.getElementById('detectedCarbon').textContent = carbonFootprint.toFixed(2);
+            document.getElementById('gamingHours').textContent = gamingHoursNeeded.toFixed(1);
+            document.getElementById('energyConsumption').textContent = energyConsumption.toFixed(2);
+            document.getElementById('netOffset').textContent = netCarbonOffset.toFixed(2);
+            document.getElementById('equivalencyText').innerHTML = equivalencyText;
+            document.getElementById('gamingDays').textContent = gamingDays;
+            document.getElementById('energyCost').textContent = '$' + energyCost;
+            document.getElementById('treeEquivalent').textContent = treeEquivalent;
+            document.getElementById('carMiles').textContent = carMiles;
+
+            resultsPanel.classList.add('show');
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function reset() {
+            productLinkInput.value = '';
+            productNameInput.value = '';
+            carbonFootprintInput.value = '';
+            gamingWattageInput.value = '300';
+            gridCarbonInput.value = '400';
+            renewablePercentInput.value = '30';
+            resultsPanel.classList.remove('show');
+            errorMessage.classList.remove('show');
+            advancedToggle.classList.remove('open');
+            advancedContent.classList.remove('show');
+            document.querySelectorAll('.type-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('[data-type="shoes"]').classList.add('active');
+            currentProductType = 'shoes';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        // Allow Enter key to submit
+        productLinkInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculate();
+        });
+    </script>
+</body>
+</html>
